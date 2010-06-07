@@ -8,7 +8,7 @@ use namespace::autoclean;
 use Carp;
 use Devel::Dwarn;
 use DateTime;
-use MooseX::Types::DBIx::Class qw( ResultSet );
+use Perlanet::DBIx::Class::Types qw( ResultSet );
 use TryCatch;
 
 extends 'Perlanet';
