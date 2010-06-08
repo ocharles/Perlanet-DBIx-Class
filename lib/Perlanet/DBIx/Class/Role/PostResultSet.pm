@@ -1,6 +1,9 @@
 package Perlanet::DBIx::Class::Role::PostResultSet;
 # ABSTRACT: Role for the ResultSet which contains a list of saved posts
 
+use strict;
+use warnings FATAL => 'all';
+
 use Moose::Role;
 use Method::Signatures::Simple;
 use namespace::autoclean;

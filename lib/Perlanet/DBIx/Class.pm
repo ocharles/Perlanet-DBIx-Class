@@ -1,6 +1,9 @@
 package Perlanet::DBIx::Class;
 # ABSTRACT: Aggregate posts in a database using DBIx::Class
 
+use strict;
+use warnings FATAL => 'all';
+
 use Moose;
 use Method::Signatures::Simple;
 use namespace::autoclean;

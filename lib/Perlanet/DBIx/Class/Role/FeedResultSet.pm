@@ -1,6 +1,9 @@
 package Perlanet::DBIx::Class::Role::FeedResultSet;
 # ABSTRACT: Role for the ResultSet which contains a list of feeds to aggregate
 
+use strict;
+use warnings FATAL => 'all';
+
 use Moose::Role;
 use Method::Signatures::Simple;
 use namespace::autoclean;
