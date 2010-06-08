@@ -13,8 +13,14 @@ use TryCatch;
 
 extends 'Perlanet';
 
-has [qw( post_resultset feed_resultset )] => (
-    isa      => ResultSet,
+has 'post_resultset' => (
+    does     => 'Perlanet::DBIx::Class::Role::PostResultSet',
+    is       => 'ro',
+    required => 1,
+);
+
+has 'feed_resultset' => (
+    does     => 'Perlanet::DBIx::Class::Role::FeedResultSet',
     is       => 'ro',
     required => 1,
 );
@@ -23,18 +29,18 @@ has '+feeds' => (
     lazy    => 1,
     default => sub  {
         my $self = shift;
-
-        return [ map {
-            Perlanet::Feed->new(
-                id      => $_->id,
-                url     => $_->url || $_->link,
-                website => $_->link || $_->url,
-                title   => $_->title,
-                author  => $_->owner,
-            )
-          } $self->feed_resultset->all ]
+        $self->feed_resultset->fetch_feeds;
     }
 );
+
+around 'select_entries' => sub {
+    my $orig = shift;
+    my ($self, @feeds) = @_;
+
+    return grep {
+        ! $self->post_resultset->has_post($_)
+    } $self->$orig(@feeds);
+};
 
 override 'render' => sub {
     my ($self, $feed) = @_;
@@ -54,16 +60,7 @@ override 'render' => sub {
 
 method insert_post ($post)
 {
-    $self->post_resultset->create({
-        feed_id          => $post->feed->id,
-        author           => $post->_entry->author || $post->feed->title,
-        url              => $post->_entry->link,
-        title            => $post->_entry->title,
-        posted_on        => $post->_entry->issued || DateTime->now,
-        summary          => $post->_entry->summary->body ||
-                            $post->_entry->content->body,
-        body             => $post->_entry->content->body,
-    });
+    $self->post_resultset->create_from_perlanet($post);
 }
 
 __PACKAGE__->meta->make_immutable;
